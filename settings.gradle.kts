@@ -13,4 +13,5 @@ dependencyResolutionManagement {
     }
 }
 rootProject.name = "RenderTest"
-include ':app'
+include(":app")
+include(":spider")
