@@ -12,7 +12,7 @@ dependencyResolutionManagement {
         mavenCentral()
     }
 }
-rootProject.name = "RenderTest"
+rootProject.name = "Spider"
 include(":app")
 include(":spider")
 include(":spider-annotation")
