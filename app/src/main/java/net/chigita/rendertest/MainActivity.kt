@@ -16,7 +16,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ShaderBrush
 import androidx.compose.ui.unit.dp
 import net.chigita.rendertest.ui.theme.RenderTestTheme
-import net.chigita.spider.RememberShader
+import net.chigita.spider.RememberTestShader
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -39,7 +39,7 @@ class MainActivity : ComponentActivity() {
 fun ShaderBrushExample() {
     val Coral = Color(0xFFF3A397)
     val LightYellow = Color(0xFFF8EE94)
-    val customShader = RememberShader()
+    val customShader = RememberTestShader()
     Box(modifier = Modifier
         .drawWithCache {
             val shader = customShader
