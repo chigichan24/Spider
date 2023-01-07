@@ -7,7 +7,22 @@ plugins {
 android {
     namespace = "net.chigita.rendertest"
     compileSdk = 33
-
+    buildFeatures {
+        compose = true
+    }
+    buildTypes {
+        getByName("release") {
+            isMinifyEnabled = false
+            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
+        }
+    }
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_1_8
+        targetCompatibility = JavaVersion.VERSION_1_8
+    }
+    composeOptions {
+        kotlinCompilerExtensionVersion = "1.4.0-alpha02"
+    }
     defaultConfig {
         applicationId = "net.chigita.rendertest"
         minSdk = 33
@@ -20,29 +35,20 @@ android {
             useSupportLibrary = true
         }
     }
-
-    buildTypes {
-        getByName("release") {
-            isMinifyEnabled = false
-            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
-        }
-    }
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
-    }
     kotlinOptions {
         jvmTarget = "1.8"
-    }
-    buildFeatures {
-        compose = true
-    }
-    composeOptions {
-        kotlinCompilerExtensionVersion = "1.4.0-alpha02"
     }
     packagingOptions {
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
+        }
+    }
+    sourceSets {
+        getByName("debug") {
+            kotlin.srcDirs("build/generated/ksp/debug/kotlin")
+        }
+        getByName("release") {
+            kotlin.srcDirs("build/generated/ksp/release/kotlin")
         }
     }
 }

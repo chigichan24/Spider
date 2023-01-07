@@ -5,6 +5,7 @@ import com.google.devtools.ksp.processing.Dependencies
 import com.google.devtools.ksp.processing.Resolver
 import com.google.devtools.ksp.processing.SymbolProcessor
 import com.google.devtools.ksp.symbol.KSAnnotated
+import org.intellij.lang.annotations.Language
 
 /**
  * A processor of root gate that analyzes ksp block options.
@@ -21,11 +22,29 @@ class SpiderProcessor(
         }
 
         val files = resolver.getNewFiles()
+        @Language("Kotlin")
         val code = """
             package net.chigita.spider
-            class Sample {
-                fun hello() {
-                    println("Hello World")
+            import android.graphics.RuntimeShader
+            import androidx.compose.runtime.Composable
+            import androidx.compose.runtime.remember
+            import androidx.compose.ui.platform.LocalContext
+            import java.io.IOException
+            
+            @Composable
+            fun RememberShader(): RuntimeShader {
+                val context = LocalContext.current
+                val shaderRawString = try {
+                    val inputStream = context.assets.open("test.agsl")
+                    val size = inputStream.available()
+                    val buffer = ByteArray(size)
+                    inputStream.read(buffer)
+                    String(buffer)
+                } catch (ignore: IOException) {
+                    ""
+                }
+                return remember {
+                    RuntimeShader(shaderRawString)
                 }
             }
         """.trimIndent()
@@ -44,6 +63,6 @@ class SpiderProcessor(
 
     companion object {
         private const val SPIDER_PACKAGE_NAME = "net.chigita.spider"
-        private const val SPIDER_TEST_FILE_NAME = "Test"
+        private const val SPIDER_TEST_FILE_NAME = "Shaders"
     }
 }
