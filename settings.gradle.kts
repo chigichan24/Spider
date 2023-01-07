@@ -15,3 +15,4 @@ dependencyResolutionManagement {
 rootProject.name = "RenderTest"
 include(":app")
 include(":spider")
+include(":spider-annotation")

@@ -1,4 +1,4 @@
-package net.chigita.spider.annotations
+package net.chigita.spider.annotation
 
 @Retention(AnnotationRetention.SOURCE)
 @Target(AnnotationTarget.CLASS)
