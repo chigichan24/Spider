@@ -3,7 +3,7 @@ package net.chigita.spider
 import com.google.devtools.ksp.processing.Resolver
 import com.google.devtools.ksp.symbol.ClassKind
 import com.google.devtools.ksp.symbol.KSClassDeclaration
-import net.chigita.spider.annotation.AGSL
+import net.chigita.spider.annotation.AGSL_ENUM
 
 /**
  * A class which represents fetching analyze target file names.
@@ -11,7 +11,7 @@ import net.chigita.spider.annotation.AGSL
 internal class SpiderTargetFileNameFetcher() {
     fun fetch(
         resolver: Resolver,
-        annotationName: String? = AGSL::class.qualifiedName
+        annotationName: String? = AGSL_ENUM::class.qualifiedName
     ): Sequence<String> {
         if (annotationName == null) {
             return emptySequence()

@@ -1,6 +1,6 @@
 package net.chigita.rendertest
 
-import net.chigita.spider.annotation.AGSL
+import net.chigita.spider.annotation.AGSL_ENUM
 
-@AGSL
+@AGSL_ENUM
 enum class ShaderDefinitions { TEST }

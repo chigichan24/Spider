@@ -1,5 +1,5 @@
 package net.chigita.spider.annotation
 
 @Retention(AnnotationRetention.SOURCE)
-@Target(AnnotationTarget.CLASS)
-annotation class AGSL
+@Target(AnnotationTarget.FUNCTION)
+annotation class AGSL(val fileName: String)
