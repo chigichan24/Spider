@@ -9,5 +9,8 @@ import com.google.devtools.ksp.processing.SymbolProcessorProvider
  */
 class SpiderProcessorProvider : SymbolProcessorProvider {
     override fun create(environment: SymbolProcessorEnvironment): SymbolProcessor =
-        SpiderProcessor(environment.codeGenerator)
+        SpiderProcessor(
+            environment.codeGenerator,
+            SpiderTargetFileNameFetcher()
+        )
 }

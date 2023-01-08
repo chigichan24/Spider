@@ -5,15 +5,14 @@ import com.google.devtools.ksp.processing.Dependencies
 import com.google.devtools.ksp.processing.Resolver
 import com.google.devtools.ksp.processing.SymbolProcessor
 import com.google.devtools.ksp.symbol.KSAnnotated
-import com.google.devtools.ksp.symbol.KSClassDeclaration
-import net.chigita.spider.annotation.AGSL
 import java.util.Locale
 
 /**
- * A processor of root gate that analyzes [AGSL] annotated enum classes.
+ * A processor of root gate that analyzes agsl shader files.
  */
-class SpiderProcessor(
-    private val codeGenerator: CodeGenerator
+internal class SpiderProcessor(
+    private val codeGenerator: CodeGenerator,
+    private val fileNameFetcher: SpiderTargetFileNameFetcher
 ) : SymbolProcessor {
 
     private var invoked = false
@@ -23,12 +22,7 @@ class SpiderProcessor(
             return emptyList()
         }
 
-        val annotationName = AGSL::class.qualifiedName ?: return emptyList()
-        val agslShaderFiles = resolver.getSymbolsWithAnnotation(annotationName)
-            .filterIsInstance<KSClassDeclaration>()
-            .flatMap { it.declarations.map { property -> property.simpleName.getShortName() } }
-            .filterNot { it == IGNORE_FUNCTION_DECLARATION }
-
+        val agslShaderFiles = fileNameFetcher.fetch(resolver)
         agslShaderFiles.forEach {
             val lowerCaseFileName = it.lowercase(Locale.ROOT)
             val pascalCaseFileName = lowerCaseFileName
@@ -74,6 +68,5 @@ class SpiderProcessor(
 
     companion object {
         private const val SPIDER_PACKAGE_NAME = "net.chigita.spider"
-        private const val IGNORE_FUNCTION_DECLARATION = "<init>"
     }
 }
