@@ -5,14 +5,15 @@ import com.google.devtools.ksp.processing.Dependencies
 import com.google.devtools.ksp.processing.Resolver
 import com.google.devtools.ksp.processing.SymbolProcessor
 import com.google.devtools.ksp.symbol.KSAnnotated
-import java.util.Locale
+import com.google.devtools.ksp.symbol.KSFile
 
 /**
  * A processor of root gate that analyzes agsl shader files.
  */
 internal class SpiderProcessor(
     private val codeGenerator: CodeGenerator,
-    private val fileNameFetcher: SpiderTargetFileNameFetcher
+    private val fileNameFetcher: SpiderTargetFileNameFetcher,
+    private val generatedCodeProvider: SpiderGeneratedCodeProvider
 ) : SymbolProcessor {
 
     private var invoked = false
@@ -22,48 +23,25 @@ internal class SpiderProcessor(
             return emptyList()
         }
 
+        val targetFile = resolver.getNewFiles().first()
         val agslShaderFiles = fileNameFetcher.fetch(resolver)
-        agslShaderFiles.forEach {
-            val lowerCaseFileName = it.lowercase(Locale.ROOT)
-            val pascalCaseFileName = lowerCaseFileName
-                .replaceFirstChar(Char::uppercaseChar)
-            val generatedSpecificName = "Remember${pascalCaseFileName}Shader"
-            val code = """
-                package net.chigita.spider
-                import android.graphics.RuntimeShader
-                import androidx.compose.runtime.Composable
-                import androidx.compose.runtime.remember
-                import androidx.compose.ui.platform.LocalContext
-                import java.io.IOException
-                
-                @Composable
-                fun ${generatedSpecificName}(): RuntimeShader {
-                    val context = LocalContext.current
-                    val shaderRawString = try {
-                        val inputStream = context.assets.open("${lowerCaseFileName}.agsl")
-                        val size = inputStream.available()
-                        val buffer = ByteArray(size)
-                        inputStream.read(buffer)
-                        String(buffer)
-                    } catch (ignore: IOException) {
-                        ""
-                    }
-                    return remember {
-                        RuntimeShader(shaderRawString)
-                    }
-                }
-            """.trimIndent()
-            codeGenerator.createNewFile(
-                dependencies = Dependencies(true, resolver.getNewFiles().first()),
-                packageName = SPIDER_PACKAGE_NAME,
-                fileName = generatedSpecificName,
-            ).use { outputStream ->
-                outputStream.write(code.toByteArray())
-            }
-        }
+        generateShaderWrappers(agslShaderFiles, targetFile)
 
         invoked = true
         return emptyList()
+    }
+
+    private fun generateShaderWrappers(agslShaderFiles: Sequence<String>, destination: KSFile) {
+        agslShaderFiles.forEach {
+            val result = generatedCodeProvider.provideCustomShaderCode(it)
+            codeGenerator.createNewFile(
+                dependencies = Dependencies(true, destination),
+                packageName = SPIDER_PACKAGE_NAME,
+                fileName = result.fileName,
+            ).use { outputStream ->
+                outputStream.write(result.generatedCode.toByteArray())
+            }
+        }
     }
 
     companion object {

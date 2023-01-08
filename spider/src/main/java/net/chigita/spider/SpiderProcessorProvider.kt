@@ -11,6 +11,7 @@ class SpiderProcessorProvider : SymbolProcessorProvider {
     override fun create(environment: SymbolProcessorEnvironment): SymbolProcessor =
         SpiderProcessor(
             environment.codeGenerator,
-            SpiderTargetFileNameFetcher()
+            SpiderTargetFileNameFetcher(),
+            SpiderGeneratedCodeProvider()
         )
 }

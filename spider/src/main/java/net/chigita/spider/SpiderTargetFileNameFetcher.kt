@@ -20,5 +20,10 @@ internal class SpiderTargetFileNameFetcher() {
             .filterIsInstance<KSClassDeclaration>()
             .filter { it.classKind == ClassKind.ENUM_CLASS }
             .flatMap { it.declarations.map { property -> property.simpleName.getShortName() } }
+            .filterNot { it == IGNORE_FUNCTION_DECLARATION }
+    }
+
+    companion object {
+        private const val IGNORE_FUNCTION_DECLARATION = "<init>"
     }
 }
