@@ -5,14 +5,14 @@ import com.google.devtools.ksp.processing.Dependencies
 import com.google.devtools.ksp.processing.Resolver
 import com.google.devtools.ksp.processing.SymbolProcessor
 import com.google.devtools.ksp.symbol.KSAnnotated
-import com.google.devtools.ksp.symbol.KSFile
+import net.chigita.spider.fetcher.AnnotatedValueFetcher
 
 /**
  * A processor of root gate that analyzes agsl shader files.
  */
 internal class SpiderProcessor(
     private val codeGenerator: CodeGenerator,
-    private val fileNameFetcher: SpiderTargetFileNameFetcher,
+    private val annotationValueFetcher: AnnotatedValueFetcher,
     private val generatedCodeProvider: SpiderGeneratedCodeProvider
 ) : SymbolProcessor {
 
@@ -23,7 +23,7 @@ internal class SpiderProcessor(
             return emptyList()
         }
 
-        val agslShaderFiles = fileNameFetcher.fetch(resolver)
+        val agslShaderFiles = annotationValueFetcher.fetch(resolver)
         generateShaderWrappers(agslShaderFiles)
 
         invoked = true

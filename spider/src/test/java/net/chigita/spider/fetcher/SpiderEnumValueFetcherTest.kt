@@ -1,4 +1,4 @@
-package net.chigita.spider
+package net.chigita.spider.fetcher
 
 import com.google.devtools.ksp.processing.Resolver
 import com.google.devtools.ksp.symbol.ClassKind
@@ -9,7 +9,7 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.mockito.Mock
-import org.mockito.Mockito.mock
+import org.mockito.Mockito
 import org.mockito.junit.MockitoJUnit
 import org.mockito.junit.MockitoRule
 import org.mockito.kotlin.doReturn
@@ -18,39 +18,37 @@ import org.mockito.quality.Strictness
 import kotlin.test.assertContentEquals
 
 /**
- * Tests for [SpiderTargetFileNameFetcher].
+ * Tests for [SpiderEnumValueFetcher].
  */
-class SpiderTargetFileNameFetcherTest {
+class SpiderEnumValueFetcherTest {
     @get:Rule
     val mockitoRule: MockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS)
 
     @Mock
     private lateinit var resolver: Resolver
-
-    private lateinit var target: SpiderTargetFileNameFetcher
-
+    
+    private lateinit var target: SpiderEnumValueFetcher
+    
     @Before
     fun setUp() {
-        target = SpiderTargetFileNameFetcher(
-            enumDefinedAnnotationName = ENUM_ANNOTATION
-        )
+        target = SpiderEnumValueFetcher(ANNOTATION)
     }
 
     @Test
-    fun testFetchFiles() {
-        val ksName = mock(KSName::class.java).stub {
+    fun testFetch() {
+        val ksName = Mockito.mock(KSName::class.java).stub {
             on { getShortName() } doReturn "TEST"
         }
-        val ksDeclaration = mock(KSDeclaration::class.java).stub {
+        val ksDeclaration = Mockito.mock(KSDeclaration::class.java).stub {
             on { simpleName } doReturn ksName
         }
-        val ksClassDeclaration = mock(KSClassDeclaration::class.java).stub {
+        val ksClassDeclaration = Mockito.mock(KSClassDeclaration::class.java).stub {
             on { classKind } doReturn ClassKind.ENUM_CLASS
             on { declarations } doReturn sequenceOf(ksDeclaration)
         }
 
         resolver.stub {
-            on { getSymbolsWithAnnotation(ENUM_ANNOTATION) } doReturn sequenceOf(
+            on { getSymbolsWithAnnotation(ANNOTATION) } doReturn sequenceOf(
                 ksClassDeclaration
             )
         }
@@ -62,26 +60,26 @@ class SpiderTargetFileNameFetcherTest {
     }
 
     @Test
-    fun testFetchFiles_multipleEnumFieldsCase() {
-        val ksNameFoo = mock(KSName::class.java).stub {
+    fun testFetch_multipleEnumFieldsCase() {
+        val ksNameFoo = Mockito.mock(KSName::class.java).stub {
             on { getShortName() } doReturn "FOO"
         }
-        val ksNameBar = mock(KSName::class.java).stub {
+        val ksNameBar = Mockito.mock(KSName::class.java).stub {
             on { getShortName() } doReturn "BAR"
         }
-        val ksDeclarationFoo = mock(KSDeclaration::class.java).stub {
+        val ksDeclarationFoo = Mockito.mock(KSDeclaration::class.java).stub {
             on { simpleName } doReturn ksNameFoo
         }
-        val ksDeclarationBar = mock(KSDeclaration::class.java).stub {
+        val ksDeclarationBar = Mockito.mock(KSDeclaration::class.java).stub {
             on { simpleName } doReturn ksNameBar
         }
-        val ksClassDeclaration = mock(KSClassDeclaration::class.java).stub {
+        val ksClassDeclaration = Mockito.mock(KSClassDeclaration::class.java).stub {
             on { classKind } doReturn ClassKind.ENUM_CLASS
             on { declarations } doReturn sequenceOf(ksDeclarationFoo, ksDeclarationBar)
         }
 
         resolver.stub {
-            on { getSymbolsWithAnnotation(ENUM_ANNOTATION) } doReturn sequenceOf(
+            on { getSymbolsWithAnnotation(ANNOTATION) } doReturn sequenceOf(
                 ksClassDeclaration
             )
         }
@@ -93,13 +91,13 @@ class SpiderTargetFileNameFetcherTest {
     }
 
     @Test
-    fun testFetchFiles_nonEnumClassCase() {
-        val ksClassDeclaration = mock(KSClassDeclaration::class.java).stub {
+    fun testFetch_nonEnumClassCase() {
+        val ksClassDeclaration = Mockito.mock(KSClassDeclaration::class.java).stub {
             on { classKind } doReturn ClassKind.OBJECT
         }
 
         resolver.stub {
-            on { getSymbolsWithAnnotation(ENUM_ANNOTATION) } doReturn sequenceOf(
+            on { getSymbolsWithAnnotation(ANNOTATION) } doReturn sequenceOf(
                 ksClassDeclaration
             )
         }
@@ -109,8 +107,8 @@ class SpiderTargetFileNameFetcherTest {
             result
         )
     }
-
+    
     companion object {
-        private const val ENUM_ANNOTATION = "enum annotation"
+        private const val ANNOTATION = "annotation"
     }
 }
