@@ -16,7 +16,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ShaderBrush
 import androidx.compose.ui.unit.dp
 import net.chigita.rendertest.ui.theme.RenderTestTheme
-import net.chigita.spider.RememberTestShader
+import net.chigita.spider.RememberOtherShader
+import net.chigita.spider.annotation.AGSL
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -36,10 +37,11 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
+@AGSL("other")
 fun ShaderBrushExample() {
     val Coral = Color(0xFFF3A397)
     val LightYellow = Color(0xFFF8EE94)
-    val customShader = RememberTestShader()
+    val customShader = RememberOtherShader()
     Box(modifier = Modifier
         .drawWithCache {
             val shader = customShader

@@ -32,7 +32,7 @@ class SpiderTargetFileNameFetcherTest {
     @Before
     fun setUp() {
         target = SpiderTargetFileNameFetcher(
-            enumAnnotationName = ENUM_ANNOTATION
+            enumDefinedAnnotationName = ENUM_ANNOTATION
         )
     }
 
