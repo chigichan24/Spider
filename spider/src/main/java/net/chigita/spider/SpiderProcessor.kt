@@ -23,19 +23,18 @@ internal class SpiderProcessor(
             return emptyList()
         }
 
-        val targetFile = resolver.getNewFiles().first()
         val agslShaderFiles = fileNameFetcher.fetch(resolver)
-        generateShaderWrappers(agslShaderFiles, targetFile)
+        generateShaderWrappers(agslShaderFiles)
 
         invoked = true
         return emptyList()
     }
 
-    private fun generateShaderWrappers(agslShaderFiles: Sequence<String>, destination: KSFile) {
+    private fun generateShaderWrappers(agslShaderFiles: Sequence<String>) {
         agslShaderFiles.forEach {
             val result = generatedCodeProvider.provideCustomShaderCode(it)
             codeGenerator.createNewFile(
-                dependencies = Dependencies(true, destination),
+                dependencies = Dependencies(true),
                 packageName = SPIDER_PACKAGE_NAME,
                 fileName = result.fileName,
             ).use { outputStream ->

@@ -8,14 +8,19 @@ import net.chigita.spider.annotation.AGSL_ENUM
 /**
  * A class which represents fetching analyze target file names.
  */
-internal class SpiderTargetFileNameFetcher() {
-    fun fetch(
-        resolver: Resolver,
-        annotationName: String? = AGSL_ENUM::class.qualifiedName
-    ): Sequence<String> {
-        if (annotationName == null) {
-            return emptySequence()
-        }
+internal class SpiderTargetFileNameFetcher(
+    private val enumAnnotationName: String? = AGSL_ENUM::class.qualifiedName
+) {
+    fun fetch(resolver: Resolver): Sequence<String> =
+        (fetchEnumDefinedFiles(resolver) + fetchFunctionDefinedFiles()).distinct()
+
+    private fun fetchFunctionDefinedFiles(): Sequence<String> {
+        return emptySequence()
+    }
+
+    private fun fetchEnumDefinedFiles(resolver: Resolver): Sequence<String> {
+        val annotationName = enumAnnotationName ?: return emptySequence()
+
         return resolver.getSymbolsWithAnnotation(annotationName)
             .filterIsInstance<KSClassDeclaration>()
             .filter { it.classKind == ClassKind.ENUM_CLASS }

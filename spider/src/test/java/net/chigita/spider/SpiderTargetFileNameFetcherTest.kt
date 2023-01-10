@@ -16,7 +16,6 @@ import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.stub
 import org.mockito.quality.Strictness
 import kotlin.test.assertContentEquals
-import kotlin.test.assertEquals
 
 /**
  * Tests for [SpiderTargetFileNameFetcher].
@@ -32,7 +31,9 @@ class SpiderTargetFileNameFetcherTest {
 
     @Before
     fun setUp() {
-        target = SpiderTargetFileNameFetcher()
+        target = SpiderTargetFileNameFetcher(
+            enumAnnotationName = ENUM_ANNOTATION
+        )
     }
 
     @Test
@@ -47,13 +48,13 @@ class SpiderTargetFileNameFetcherTest {
             on { classKind } doReturn ClassKind.ENUM_CLASS
             on { declarations } doReturn sequenceOf(ksDeclaration)
         }
-        val annotation = "annotation"
+
         resolver.stub {
-            on { getSymbolsWithAnnotation(annotation) } doReturn sequenceOf(
+            on { getSymbolsWithAnnotation(ENUM_ANNOTATION) } doReturn sequenceOf(
                 ksClassDeclaration
             )
         }
-        val result = target.fetch(resolver, annotation)
+        val result = target.fetch(resolver)
         assertContentEquals(
             sequenceOf("TEST"),
             result
@@ -78,13 +79,13 @@ class SpiderTargetFileNameFetcherTest {
             on { classKind } doReturn ClassKind.ENUM_CLASS
             on { declarations } doReturn sequenceOf(ksDeclarationFoo, ksDeclarationBar)
         }
-        val annotation = "annotation"
+
         resolver.stub {
-            on { getSymbolsWithAnnotation(annotation) } doReturn sequenceOf(
+            on { getSymbolsWithAnnotation(ENUM_ANNOTATION) } doReturn sequenceOf(
                 ksClassDeclaration
             )
         }
-        val result = target.fetch(resolver, annotation)
+        val result = target.fetch(resolver)
         assertContentEquals(
             sequenceOf("FOO", "BAR"),
             result
@@ -96,25 +97,20 @@ class SpiderTargetFileNameFetcherTest {
         val ksClassDeclaration = mock(KSClassDeclaration::class.java).stub {
             on { classKind } doReturn ClassKind.OBJECT
         }
-        val annotation = "annotation"
+
         resolver.stub {
-            on { getSymbolsWithAnnotation(annotation) } doReturn sequenceOf(
+            on { getSymbolsWithAnnotation(ENUM_ANNOTATION) } doReturn sequenceOf(
                 ksClassDeclaration
             )
         }
-        val result = target.fetch(resolver, annotation)
+        val result = target.fetch(resolver)
         assertContentEquals(
             emptySequence(),
             result
         )
     }
 
-    @Test
-    fun testFetchFiles_annotationNotDefinedCase() {
-        val result = target.fetch(resolver, null)
-        assertEquals(
-            emptySequence(),
-            result
-        )
+    companion object {
+        private const val ENUM_ANNOTATION = "enum annotation"
     }
 }
