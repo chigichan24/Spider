@@ -11,10 +11,79 @@ When we use the AGSL, passing the raw string directly. It has a potential of run
 Spider will care that situations.
 
 ## Usage
-TBD
+0. Add dependency of this library.
+
+build.gradle.kts
+```kotlin
+plugins {
+    id("com.google.devtools.ksp").version("1.7.21-1.0.8")
+}
+
+android {
+    sourceSets {
+        getByName("debug") {
+            kotlin.srcDirs("build/generated/ksp/debug/kotlin")
+        }
+        getByName("release") {
+            kotlin.srcDirs("build/generated/ksp/release/kotlin")
+        }
+    }
+}
+
+dependencies {
+    implementation("net.chigita.spider:spider-annotation:1.0.0-alpha01")
+    ksp("net.chigita.spider:spider:1.0.0-alpha01")
+}
+```
+
+1. Prepare `.agsl` file and save in `assets` directly.
+
+<div align="center">
+    <img src="./img/setup_agsl_asset.png" width="400" alt="logo" />
+</div>
+
+2. Define Compose function that refer to agsl file.
+
+```kotlin
+@Composable
+fun ShaderBrushExample() {
+    Box(modifier = Modifier
+        .drawWithCache {
+            val shaderBrush = ShaderBrush(shader)
+            drawRect(shaderBrush)
+        }.fillMaxSize()
+    )
+}
+```
+
+3. Add annotation `@AGSL(file_name)` for the composable function.
+
+```kotlin
+@Composable
+@AGSL("test")
+fun ShaderBrushExample() {
+    // code snip...
+}
+```
+
+4. You can refer the `.agsl` asset as `RuntimeShader`. This library automatically generates `RememberTestShader` composable function.
+
+```kotlin
+@Composable
+@AGSL("test")
+fun ShaderBrushExample() {
+    val shader = RememberTestShader()
+    Box(modifier = Modifier
+        .drawWithCache {
+            val shaderBrush = ShaderBrush(shader)
+            drawRect(shaderBrush)
+        }.fillMaxSize()
+    )
+}
+```
 
 ## Plan
 
 - [x] Annotation for enum support
-- [ ] Annotation with args support
+- [x] Annotation with args support
 - [ ] Pre syntax verify support
